@@ -1,0 +1,31 @@
+# Maintainer: Matthias Aßhauer <mha1993@live.de>
+
+_realname=docx2txt
+
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=1.4
+pkgrel=1
+pkgdesc="docx2txt is a perl based command line utility to convert Microsoft Office(Tm) Docx documents to equivalent Text documents. (mingw-w64)"
+arch=('any')
+groups=("${MINGW_PACKAGE_PREFIX}")
+license=('GPL3+')
+url="http://${_realname}.sourceforge.net/"
+options=('strip')
+source=("http://sourceforge.net/projects/${_realname}/files/${_realname}/v${pkgver}/${_realname}-${pkgver}.tgz/download")
+sha1sums=('a23f83ec5e1d479888815255e81063c02c932c2f')
+provides=('${_realname}')
+depends=('perl' 'unzip')
+
+package() {
+  case "$CARCH" in
+    i686)
+      mingwdir="mingw32"
+    ;;
+    x86_64)
+      mingwdir="mingw64"
+    ;;
+  esac
+  
+  cd ${srcdir}/${_realname}-${pkgver}
+  make BINDIR=$pkgdir/$mingwdir/bin CONFIGDIR=$pkgdir/$mingwdir/etc
+}
