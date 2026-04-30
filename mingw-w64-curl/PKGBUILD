@@ -5,8 +5,8 @@ pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-gnutls"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-winssl")
-pkgver=8.19.0
-pkgrel=3
+pkgver=8.20.0
+pkgrel=1
 pkgdesc="Command line tool and library for transferring data with URLs (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -37,17 +37,15 @@ source=("https://github.com/curl/curl/releases/download/${_realname}-${pkgver//.
         "0001-Make-cURL-relocatable.patch"
         "0002-Hack-make-relocation-work-inside-libexec-git-core-an.patch"
         "0003-auth-upgrade-SSPI-identity-to-SEC_WINNT_AUTH_IDENTIT.patch"
-        "0004-spnego-windows-disallow-NTLM-via-SPNEGO.patch"
-        "70bb0db76720c152f6a55bbe12cf162b55cb105b.patch")
-sha256sums=('eba3230c1b659211a7afa0fbf475978cbf99c412e4d72d9aa92d020c460742d4'
+        "0004-spnego-windows-disallow-NTLM-via-SPNEGO.patch")
+sha256sums=('4be48e69cf467246cb97d369b85d78a08528f2b37cffef2418ee16e6a4eb596e'
             'SKIP'
             '08209cbf1633fa92eae7e5d28f95f8df9d6184cc20fa878c99aec4709bb257fd'
             '965d3921ec4fdeec94a2718bc2c85ce5e1a00ea0e499330a554074a7ae15dfc6'
-            '8567c3601664836e12e142f4c51c4f023aaa3477e9985ea4168301af22a1141f'
-            'b9a7ca284f881c2e5e15daf109d8c42d7e92ef32949031b3da42ef9b7bf924bd'
-            'e834995b7adcb573c8441ea17a54e71a359c4ec5049d31093ff25f898a48abf9'
-            'f597923ca8ec8757bc7600a420cc5f6f5acd6ab85e005054273bc63805af6d48'
-            'ffaadb16a5f1aaa4e0a33473b905a6650e6291afecb39f56805eaffc26a20932')
+            'b2edcb0ea116ab7ebb77a3a390823e2ff7b1dce0af8cd92cd36efca7814dfc2e'
+            '0bd487dd2e835caac6bd2f3aaef98423712c20e5c0c3330501d048681f0b950a'
+            'e1afa8b88959782c562fa3ca635d4ebe2bc84c0c490da82caffedb876b743be9'
+            '17fbbee114c957e976a2e2100cd250820b645ecdcea00f27c1083dd5d97c96ee')
 validpgpkeys=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2')  # Daniel Stenberg
 
 if test -z "$WITHOUT_ALTERNATES"
@@ -99,8 +97,7 @@ prepare() {
     0001-Make-cURL-relocatable.patch \
     0002-Hack-make-relocation-work-inside-libexec-git-core-an.patch \
     0003-auth-upgrade-SSPI-identity-to-SEC_WINNT_AUTH_IDENTIT.patch \
-    0004-spnego-windows-disallow-NTLM-via-SPNEGO.patch \
-    70bb0db76720c152f6a55bbe12cf162b55cb105b.patch
+    0004-spnego-windows-disallow-NTLM-via-SPNEGO.patch
 
   autoreconf -vfi
 }
