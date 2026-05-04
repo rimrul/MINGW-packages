@@ -39,7 +39,7 @@ jobs:
         directory: ${{ fromJSON(needs.determine-packages.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v6
-      - uses: git-for-windows/setup-git-for-windows-sdk@v1
+      - uses: git-for-windows/setup-git-for-windows-sdk@v2
         with:
           flavor: full
       - name: get GPG key(s)
