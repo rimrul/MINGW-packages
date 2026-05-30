@@ -35,6 +35,9 @@ prepare() {
   x86_64)
     make mingw64_defconfig
     ;;
+  aarch64)
+    make mingw64a_defconfig
+    ;;
   *)
     echo "Could not prepare for architecture $CARCH" >&2
     exit 1
