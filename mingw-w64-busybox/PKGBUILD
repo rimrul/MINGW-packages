@@ -77,18 +77,21 @@ package() {
   ./applets/install.sh "${pkgdir}" --hardlinks
 }
 
-package_mingw-w64-i686-busybox() {
+package_busybox() {
   package
 }
 
-package_mingw-w64-x86_64-busybox() {
-  package
-}
-
-package_mingw-w64-i686-busybox-pdb() {
+package_busybox-pdb() {
   package pdb
 }
 
-package_mingw-w64-x86_64-busybox-pdb() {
-  package pdb
-}
+# template start; name=mingw-w64-splitpkg-wrappers; version=1.0;
+# vim: set ft=bash :
+
+# generate wrappers
+for _name in "${pkgname[@]}"; do
+  _short="package_${_name#${MINGW_PACKAGE_PREFIX}-}"
+  _func="$(declare -f "${_short}")"
+  eval "${_func/#${_short}/package_${_name}}"
+done
+# template end;
