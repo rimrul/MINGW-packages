@@ -2,15 +2,14 @@
 
 _realname=busybox
 pkgbase=mingw-w64-${_realname}
-pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
-         "${MINGW_PACKAGE_PREFIX}-${_realname}-pdb")
-_ver_base=1.34.0
-pkgver=1.34.0.19688.985b51cf7
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=1.38.0
+pkgver=1.38.0.21225.dba81cf5f
 pkgrel=1
 pkgdesc="Windows port of BusyBox (mingw-w64)"
 arch=('any')
 url="https://github.com/git-for-windows/busybox-w32"
-makedepends=("${MINGW_PACKAGE_PREFIX}-cv2pdb")
+
 license=('GPL2')
 
 options=('!strip')
@@ -35,6 +34,9 @@ prepare() {
   x86_64)
     make mingw64_defconfig
     ;;
+  aarch64)
+    make mingw64a_defconfig
+    ;;
   *)
     echo "Could not prepare for architecture $CARCH" >&2
     exit 1
@@ -50,19 +52,23 @@ build() {
   test "a$F" = "a$CPPFLAGS" ||
   CPPFLAGS="$F${CPPFLAGS##* -D__USE_MINGW_ANSI_STDIO=*}"
 
+  # On the clang-based toolchains, the driver forwards compile-only
+  # flags (e.g. -fno-builtin-stpcpy, -fno-ident) to the final link
+  # step; clang then warns about every one of them as
+  # `-Wunused-command-line-argument`, which `-Werror` turns into a
+  # fatal error. The fix is a packaging concern (busybox-w32 itself
+  # is compiler-agnostic), so suppress the warning here rather than
+  # in the source tree.
+  case "$CC" in
+  *clang*) CFLAGS="$CFLAGS -Wno-unused-command-line-argument" ;;
+  esac
+
   make clean
-  make busybox_unstripped.exe
-  cv2pdb busybox_unstripped.exe busybox.exe busybox.pdb
+  make
 }
 
 package() {
   cd ${srcdir}/${_realname}-w32
-
-  test pdb != "$1" || {
-    install -d -m 755 "${pkgdir}${MINGW_PREFIX}/bin"
-    install -m 755 busybox.pdb "${pkgdir}${MINGW_PREFIX}/bin"
-    return
-  }
 
   # install into $MINGW_PREFIX/bin/
   ! grep -q '\$prefix/bin' applets/install.sh ||
@@ -77,18 +83,17 @@ package() {
   ./applets/install.sh "${pkgdir}" --hardlinks
 }
 
-package_mingw-w64-i686-busybox() {
+package_busybox() {
   package
 }
 
-package_mingw-w64-x86_64-busybox() {
-  package
-}
+# template start; name=mingw-w64-splitpkg-wrappers; version=1.0;
+# vim: set ft=bash :
 
-package_mingw-w64-i686-busybox-pdb() {
-  package pdb
-}
-
-package_mingw-w64-x86_64-busybox-pdb() {
-  package pdb
-}
+# generate wrappers
+for _name in "${pkgname[@]}"; do
+  _short="package_${_name#${MINGW_PACKAGE_PREFIX}-}"
+  _func="$(declare -f "${_short}")"
+  eval "${_func/#${_short}/package_${_name}}"
+done
+# template end;
