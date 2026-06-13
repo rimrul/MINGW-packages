@@ -83,6 +83,11 @@ STRIP=
 STRIP_OPTS=
 LDFLAGS=
 
+if test -z "$NO_RUST"
+then
+  makedepends+=("${MINGW_PACKAGE_PREFIX}-rust")
+fi
+
 if test -z "$WITH_PDBS"
 then
   options+=('strip')
