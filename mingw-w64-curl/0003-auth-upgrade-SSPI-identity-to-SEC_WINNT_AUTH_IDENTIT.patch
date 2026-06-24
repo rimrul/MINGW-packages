@@ -1,7 +1,7 @@
-From ba5dc04aa3908cf34c01f7112c59b3f7e077a97b Mon Sep 17 00:00:00 2001
+From 596941d4707d5574aacc73654ebc1f8b987e2e6f Mon Sep 17 00:00:00 2001
 From: Matthew John Cheetham <mjcheetham@outlook.com>
 Date: Tue, 24 Mar 2026 11:53:02 +0000
-Subject: [PATCH 3/4] auth: upgrade SSPI identity to SEC_WINNT_AUTH_IDENTITY_EX
+Subject: [PATCH 3/N] auth: upgrade SSPI identity to SEC_WINNT_AUTH_IDENTITY_EX
 
 Replace SEC_WINNT_AUTH_IDENTITY with SEC_WINNT_AUTH_IDENTITY_EX across all
 SSPI authentication code. The extended structure adds Version, Length, and
@@ -22,7 +22,7 @@ Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
  5 files changed, 19 insertions(+), 17 deletions(-)
 
 diff --git a/lib/curl_sspi.c b/lib/curl_sspi.c
-index 3ea1762..4180643 100644
+index 3ea17621b1..4180643507 100644
 --- a/lib/curl_sspi.c
 +++ b/lib/curl_sspi.c
 @@ -93,7 +93,7 @@ void Curl_sspi_global_cleanup(void)
@@ -53,7 +53,7 @@ index 3ea1762..4180643 100644
    if(identity) {
      curlx_safefree(identity->User);
 diff --git a/lib/curl_sspi.h b/lib/curl_sspi.h
-index 3779d51..ea405f5 100644
+index 2bd7eb4be8..992e01a9f2 100644
 --- a/lib/curl_sspi.h
 +++ b/lib/curl_sspi.h
 @@ -34,14 +34,14 @@ void Curl_sspi_global_cleanup(void);
@@ -75,7 +75,7 @@ index 3779d51..ea405f5 100644
  /* Forward-declaration of global variables defined in curl_sspi.c */
  extern PSecurityFunctionTable Curl_pSecFn;
 diff --git a/lib/ldap.c b/lib/ldap.c
-index 16c93ee..9346123 100644
+index a6a69eb7f1..3dab037353 100644
 --- a/lib/ldap.c
 +++ b/lib/ldap.c
 @@ -157,7 +157,7 @@ static ULONG ldap_win_bind_auth(LDAP *server, const char *user,
@@ -88,7 +88,7 @@ index 16c93ee..9346123 100644
  
    memset(&cred, 0, sizeof(cred));
 diff --git a/lib/vauth/digest_sspi.c b/lib/vauth/digest_sspi.c
-index f0b6780..b7703b8 100644
+index 305e367e17..c9b1432830 100644
 --- a/lib/vauth/digest_sspi.c
 +++ b/lib/vauth/digest_sspi.c
 @@ -95,8 +95,8 @@ CURLcode Curl_auth_create_digest_md5_message(struct Curl_easy *data,
@@ -102,7 +102,7 @@ index f0b6780..b7703b8 100644
    SecBuffer chlg_buf;
    SecBuffer resp_buf;
    SecBufferDesc chlg_desc;
-@@ -240,7 +240,7 @@ CURLcode Curl_auth_create_digest_md5_message(struct Curl_easy *data,
+@@ -243,7 +243,7 @@ CURLcode Curl_auth_create_digest_md5_message(struct Curl_easy *data,
   * Returns CURLE_OK on success.
   */
  CURLcode Curl_override_sspi_http_realm(const char *chlg,
@@ -111,7 +111,7 @@ index f0b6780..b7703b8 100644
  {
    xcharp_u domain, dup_domain;
  
-@@ -466,8 +466,8 @@ CURLcode Curl_auth_create_digest_http_message(struct Curl_easy *data,
+@@ -465,8 +465,8 @@ CURLcode Curl_auth_create_digest_http_message(struct Curl_easy *data,
  
    if(!digest->http_context) {
      CredHandle credentials;
@@ -123,10 +123,10 @@ index f0b6780..b7703b8 100644
      SecBufferDesc resp_desc;
      unsigned long attrs;
 diff --git a/lib/vauth/vauth.h b/lib/vauth/vauth.h
-index 279da60..b8898f2 100644
+index 0f82f92945..830a06fdae 100644
 --- a/lib/vauth/vauth.h
 +++ b/lib/vauth/vauth.h
-@@ -171,8 +171,8 @@ struct ntlmdata {
+@@ -169,8 +169,8 @@ struct ntlmdata {
  #endif
    CredHandle *credentials;
    CtxtHandle *context;
@@ -137,7 +137,7 @@ index 279da60..b8898f2 100644
    size_t token_max;
    BYTE *output_token;
    BYTE *input_token;
-@@ -242,8 +242,8 @@ struct kerberos5data {
+@@ -236,8 +236,8 @@ struct kerberos5data {
    CredHandle *credentials;
    CtxtHandle *context;
    TCHAR *spn;
@@ -148,7 +148,7 @@ index 279da60..b8898f2 100644
    size_t token_max;
    BYTE *output_token;
  #else
-@@ -310,8 +310,8 @@ struct negotiatedata {
+@@ -303,8 +303,8 @@ struct negotiatedata {
    SECURITY_STATUS status;
    CredHandle *credentials;
    CtxtHandle *context;

@@ -1,7 +1,7 @@
-From ca0338db9469d32ff4d522e5cb7779888c46d83f Mon Sep 17 00:00:00 2001
+From 52a8eef5f56bf6980ed927b05218fd441a08132b Mon Sep 17 00:00:00 2001
 From: Ray Donnelly <mingw.android@gmail.com>
 Date: Wed, 22 Feb 2017 11:03:04 +0100
-Subject: [PATCH 1/4] Make cURL relocatable
+Subject: [PATCH 1/N] Make cURL relocatable
 
 This adds the ability to specify CA_BUNDLE paths that are relative to
 the MSYS2 pseudo-root directory.
@@ -22,17 +22,17 @@ be copied from `mingw-w64-pathtools` into `lib/`.
 Original-patch-by: Ray Donnelly <mingw.android@gmail.com>
 Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
 ---
- configure.ac         |  2 ++
- lib/Makefile.inc     |  2 ++
- lib/curl_config.h.in |  3 +++
- lib/vtls/vtls.c      | 48 ++++++++++++++++++++++++++++++++++++++++++++
+ configure.ac           |  2 ++
+ lib/Makefile.inc       |  2 ++
+ lib/curl_config.h.in   |  3 +++
+ lib/vtls/vtls_config.c | 48 ++++++++++++++++++++++++++++++++++++++++++
  4 files changed, 55 insertions(+)
 
 diff --git a/configure.ac b/configure.ac
-index d06024b..ea85a68 100644
+index a21847ea66..f3eb99c9d9 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -3977,6 +3977,8 @@ AC_CHECK_HEADERS(
+@@ -4022,6 +4022,8 @@ AC_CHECK_HEADERS(
  ]
  )
  
@@ -42,27 +42,27 @@ index d06024b..ea85a68 100644
  AC_C_CONST
  AC_TYPE_SIZE_T
 diff --git a/lib/Makefile.inc b/lib/Makefile.inc
-index d762f72..2203577 100644
+index 266ba52af3..35c7a0fa72 100644
 --- a/lib/Makefile.inc
 +++ b/lib/Makefile.inc
-@@ -233,6 +233,7 @@ LIB_CFILES =         \
-   noproxy.c          \
+@@ -245,6 +245,7 @@ LIB_CFILES =         \
+   netrc.c            \
    openldap.c         \
    parsedate.c        \
 +  pathtools.c        \
+   peer.c             \
    pingpong.c         \
    pop3.c             \
-   progress.c         \
-@@ -364,6 +365,7 @@ LIB_HFILES =         \
+@@ -380,6 +381,7 @@ LIB_HFILES =         \
+   multiif.h          \
    netrc.h            \
-   noproxy.h          \
    parsedate.h        \
 +  pathtools.h        \
+   peer.h             \
    pingpong.h         \
    pop3.h             \
-   progress.h         \
 diff --git a/lib/curl_config.h.in b/lib/curl_config.h.in
-index ec9b71f..ac0bc93 100644
+index 405ba1aa6c..709be83bae 100644
 --- a/lib/curl_config.h.in
 +++ b/lib/curl_config.h.in
 @@ -2,6 +2,9 @@
@@ -72,16 +72,16 @@ index ec9b71f..ac0bc93 100644
 +/* Location of executable */
 +#undef CURL_BINDIR
 +
- /* Location of default ca bundle */
+ /* Location of default CA bundle */
  #undef CURL_CA_BUNDLE
  
-diff --git a/lib/vtls/vtls.c b/lib/vtls/vtls.c
-index 891facf..ba43dc5 100644
---- a/lib/vtls/vtls.c
-+++ b/lib/vtls/vtls.c
-@@ -78,6 +78,9 @@
- #include <Security/Security.h>
- #endif
+diff --git a/lib/vtls/vtls_config.c b/lib/vtls/vtls_config.c
+index 4a9b69654b..ee70c9a549 100644
+--- a/lib/vtls/vtls_config.c
++++ b/lib/vtls/vtls_config.c
+@@ -50,6 +50,9 @@
+ #include "vtls/vtls.h"
+ #include "vtls/vtls_config.h"
  
 +#if defined(__MINGW32__)
 +#include "../pathtools.h"
@@ -89,7 +89,7 @@ index 891facf..ba43dc5 100644
  
  #define CLONE_STRING(var)                    \
    do {                                       \
-@@ -298,6 +301,15 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data)
+@@ -260,6 +263,15 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data,
  #if defined(CURL_CA_PATH) || defined(CURL_CA_BUNDLE)
    struct UserDefined *set = &data->set;
    CURLcode result;
@@ -104,8 +104,8 @@ index 891facf..ba43dc5 100644
 +#endif /* defined(__MINGW32__) */
  #endif
  
-   if(Curl_ssl_backend() != CURLSSLBACKEND_SCHANNEL) {
-@@ -306,15 +318,41 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data)
+   ssl_easy_config_compl_options(origin, data->state.initial_origin, sslc);
+@@ -270,15 +282,41 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data,
        sslc->native_ca_store = TRUE;
  #endif
  #ifdef CURL_CA_PATH
@@ -147,7 +147,7 @@ index 891facf..ba43dc5 100644
        if(result)
          return result;
      }
-@@ -353,16 +391,26 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data)
+@@ -339,16 +377,26 @@ CURLcode Curl_ssl_easy_config_complete(struct Curl_easy *data,
  #endif
  #ifdef CURL_CA_PATH
      if(!sslc->custom_capath && !set->str[STRING_SSL_CAPATH_PROXY]) {

@@ -1,7 +1,7 @@
-From ff7b85749240b289615394f83c7d91cfe129dece Mon Sep 17 00:00:00 2001
+From 243a63b3afaf344fa1f3c6df5fea0f6c547d42b8 Mon Sep 17 00:00:00 2001
 From: Matthew John Cheetham <mjcheetham@outlook.com>
 Date: Mon, 23 Mar 2026 13:34:27 +0000
-Subject: [PATCH 4/4] spnego(windows): disallow NTLM via SPNEGO
+Subject: [PATCH 4/N] spnego(windows): disallow NTLM via SPNEGO
 
 SPNEGO (Negotiate) authentication can silently fall back to NTLM when
 Kerberos is unavailable. This is undesirable because:
@@ -37,10 +37,10 @@ Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
  1 file changed, 27 insertions(+)
 
 diff --git a/lib/vauth/spnego_sspi.c b/lib/vauth/spnego_sspi.c
-index 1baf593..d5eccc0 100644
+index b7d82c04dd..069ce6d780 100644
 --- a/lib/vauth/spnego_sspi.c
 +++ b/lib/vauth/spnego_sspi.c
-@@ -146,6 +146,33 @@ CURLcode Curl_auth_decode_spnego_message(struct Curl_easy *data,
+@@ -148,6 +148,33 @@ CURLcode Curl_auth_decode_spnego_message(struct Curl_easy *data,
        /* Use the current Windows user */
        nego->p_identity = NULL;
  
